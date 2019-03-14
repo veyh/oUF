@@ -21,6 +21,8 @@ A default texture will be applied if the widget is a StatusBar and doesn't have 
                                     bar. Only valid for the player and pet units (boolean)
 .displayAltPower                  - Use this to let the widget display alternate power if the unit has one. If no
                                     alternate power the display will fall back to primary power (boolean)
+.altPowerColor                    - The RGB values to use for a fixed color if the alt power bar is being displayed
+                                    instead of primary power bar (table)
 .useAtlas                         - Use this to let the widget use an atlas for its texture if `.atlas` is defined on
                                     the widget or an atlas is present in `self.colors.power` for the appropriate power
                                     type (boolean)
@@ -33,8 +35,6 @@ The following options are listed by priority. The first check that returns true 
 
 .colorTapping      - Use `self.colors.tapping` to color the bar if the unit isn't tapped by the player (boolean)
 .colorDisconnected - Use `self.colors.disconnected` to color the bar if the unit is offline (boolean)
-.altPowerColor     - The RGB values to use for a fixed color if the alt power bar is being displayed instead of primary
-                     power bar (table)
 .colorPower        - Use `self.colors.power[token]` to color the bar based on the unit's power type. This method will
                      fall-back to `:GetAlternativeColor()` if it can't find a color matching the token. If this function
                      isn't defined, then it will attempt to color based upon the alternative power colors returned by
@@ -62,7 +62,6 @@ The following options are listed by priority. The first check that returns true 
 ## Attributes
 
 .disconnected - Indicates whether the unit is disconnected (boolean)
-.tapped       - Indicates whether the unit is tapped by the player (boolean)
 
 ## Examples
 
@@ -90,7 +89,7 @@ The following options are listed by priority. The first check that returns true 
     Background.multiplier = .5
 
     -- Register it with oUF
-	Power.bg = Background
+    Power.bg = Background
     self.Power = Power
 --]]
 
@@ -116,29 +115,28 @@ local function UpdateColor(self, event, unit)
 
 	local ptype, ptoken, altR, altG, altB = UnitPowerType(unit)
 
-	local r, g, b, t
-	if(element.colorTapping and element.tapped) then
+	local r, g, b, t, atlas
+	if(element.colorTapping and not UnitPlayerControlled(unit) and UnitIsTapDenied(unit)) then
 		t = self.colors.tapped
 	elseif(element.colorDisconnected and element.disconnected) then
 		t = self.colors.disconnected
-	elseif(element.displayType == ALTERNATE_POWER_INDEX and element.altPowerColor) then
-		t = element.altPowerColor
-	elseif(element.colorPower) then
-		t = self.colors.power[ptoken]
+	elseif(element.colorPower and element.displayType ~= ALTERNATE_POWER_INDEX) then
+		t = self.colors.power[ptoken or ptype]
 		if(not t) then
 			if(element.GetAlternativeColor) then
 				r, g, b = element:GetAlternativeColor(unit, ptype, ptoken, altR, altG, altB)
 			elseif(altR) then
 				r, g, b = altR, altG, altB
-
 				if(r > 1 or g > 1 or b > 1) then
 					-- BUG: As of 7.0.3, altR, altG, altB may be in 0-1 or 0-255 range.
 					r, g, b = r / 255, g / 255, b / 255
 				end
-			else
-				t = self.colors.power[ptype]
 			end
+		elseif(element.useAtlas and (element.atlas or t.atlas)) then
+			atlas = element.atlas or t.atlas
 		end
+	elseif(element.colorPower and (element.altPowerColor or self.colors.power[ALTERNATE_POWER_INDEX])) then
+		t = self.colors.power[ALTERNATE_POWER_INDEX] or element.altPowerColor
 	elseif(element.colorClass and UnitIsPlayer(unit)) or
 		(element.colorClassNPC and not UnitIsPlayer(unit)) or
 		(element.colorClassPet and UnitPlayerControlled(unit) and not UnitIsPlayer(unit)) then
@@ -157,25 +155,13 @@ local function UpdateColor(self, event, unit)
 		r, g, b = t[1], t[2], t[3]
 	end
 
-	t = self.colors.power[ptoken or ptype]
-
-	local atlas = element.atlas or (t and t.atlas)
-	if(element.useAtlas and atlas and element.displayType ~= ALTERNATE_POWER_INDEX) then
+	if(atlas) then
 		element:SetStatusBarAtlas(atlas)
 		element:SetStatusBarColor(1, 1, 1)
-
-		if(element.colorTapping or element.colorDisconnected) then
-			t = element.disconnected and self.colors.disconnected or self.colors.tapped
-			element:GetStatusBarTexture():SetDesaturated(element.disconnected or element.tapped)
-		end
-
-		if(t and (r or g or b)) then
-			r, g, b = t[1], t[2], t[3]
-		end
 	else
 		element:SetStatusBarTexture(element.texture)
 
-		if(r or g or b) then
+		if(b) then
 			element:SetStatusBarColor(r, g, b)
 		end
 	end
@@ -219,7 +205,6 @@ local function Update(self, event, unit)
 
 	local cur, max = UnitPower(unit, displayType), UnitPowerMax(unit, displayType)
 	local disconnected = not UnitIsConnected(unit)
-	local tapped = not UnitPlayerControlled(unit) and UnitIsTapDenied(unit)
 	element:SetMinMaxValues(min or 0, max)
 
 	if(disconnected) then
@@ -233,16 +218,15 @@ local function Update(self, event, unit)
 	element.max = max
 	element.displayType = displayType
 	element.disconnected = disconnected
-	element.tapped = tapped
 
 	--[[ Callback: Power:PostUpdate(unit, cur, min, max)
 	Called after the element has been updated.
 
-	* self       - the Power element
-	* unit       - the unit for which the update has been triggered (string)
-	* cur        - the unit's current power value (number)
-	* min        - the unit's minimum possible power value (number)
-	* max        - the unit's maximum possible power value (number)
+	* self - the Power element
+	* unit - the unit for which the update has been triggered (string)
+	* cur  - the unit's current power value (number)
+	* min  - the unit's minimum possible power value (number)
+	* max  - the unit's maximum possible power value (number)
 	--]]
 	if(element.PostUpdate) then
 		return element:PostUpdate(unit, cur, min, max)
