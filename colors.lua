@@ -11,6 +11,7 @@ local colors = {
 		0, 1, 0
 	},
 	health = {49 / 255, 207 / 255, 37 / 255},
+	dead = {0.6, 0.6, 0.6},
 	disconnected = {0.6, 0.6, 0.6},
 	tapped = {0.6, 0.6, 0.6},
 	runes = {
