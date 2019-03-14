@@ -33,8 +33,9 @@ A default texture will be applied if the widget is a StatusBar and doesn't have 
 
 The following options are listed by priority. The first check that returns true decides the color of the bar.
 
-.colorTapping      - Use `self.colors.tapping` to color the bar if the unit isn't tapped by the player (boolean)
+.colorDead         - Use `self.colors.dead` to color the bar if the unit is dead (boolean)
 .colorDisconnected - Use `self.colors.disconnected` to color the bar if the unit is offline (boolean)
+.colorTapping      - Use `self.colors.tapping` to color the bar if the unit isn't tapped by the player (boolean)
 .colorPower        - Use `self.colors.power[token]` to color the bar based on the unit's power type. This method will
                      fall-back to `:GetAlternativeColor()` if it can't find a color matching the token. If this function
                      isn't defined, then it will attempt to color based upon the alternative power colors returned by
@@ -116,10 +117,12 @@ local function UpdateColor(self, event, unit)
 	local ptype, ptoken, altR, altG, altB = UnitPowerType(unit)
 
 	local r, g, b, t, atlas
-	if(element.colorTapping and not UnitPlayerControlled(unit) and UnitIsTapDenied(unit)) then
-		t = self.colors.tapped
+	if(element.colorDead and element.dead) then
+		t = self.colors.dead
 	elseif(element.colorDisconnected and element.disconnected) then
 		t = self.colors.disconnected
+	elseif(element.colorTapping and not UnitPlayerControlled(unit) and UnitIsTapDenied(unit)) then
+		t = self.colors.tapped
 	elseif(element.colorPower and element.displayType ~= ALTERNATE_POWER_INDEX) then
 		t = self.colors.power[ptoken or ptype]
 		if(not t) then
@@ -204,10 +207,12 @@ local function Update(self, event, unit)
 	end
 
 	local cur, max = UnitPower(unit, displayType), UnitPowerMax(unit, displayType)
+	local dead = UnitIsDeadOrGhost(unit)
 	local disconnected = not UnitIsConnected(unit)
+
 	element:SetMinMaxValues(min or 0, max)
 
-	if(disconnected) then
+	if(dead or disconnected) then
 		element:SetValue(max)
 	else
 		element:SetValue(cur)
@@ -217,6 +222,7 @@ local function Update(self, event, unit)
 	element.min = min
 	element.max = max
 	element.displayType = displayType
+	element.dead = dead
 	element.disconnected = disconnected
 
 	--[[ Callback: Power:PostUpdate(unit, cur, min, max)
