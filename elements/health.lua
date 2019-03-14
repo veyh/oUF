@@ -27,6 +27,8 @@ The following options are listed by priority. The first check that returns true 
 
 .colorTapping      - Use `self.colors.tapping` to color the bar if the unit isn't tapped by the player (boolean)
 .colorDisconnected - Use `self.colors.disconnected` to color the bar if the unit is offline (boolean)
+.colorThreat       - Use `self.colors.threat[threat]` to color the bar based on the unit's threat status. `threat` is
+                     defined by the first return of [UnitThreatSituation](https://wow.gamepedia.com/API_UnitThreatSituation) (boolean)
 .colorClass        - Use `self.colors.class[class]` to color the bar based on unit class. `class` is defined by the
                      second return of [UnitClass](http://wowprogramming.com/docs/api/UnitClass.html) (boolean)
 .colorClassNPC     - Use `self.colors.class[class]` to color the bar if the unit is a NPC (boolean)
@@ -96,6 +98,8 @@ local function UpdateColor(self, event, unit)
 		t = self.colors.tapped
 	elseif(element.colorDisconnected and element.disconnected) then
 		t = self.colors.disconnected
+	elseif(element.colorThreat and not UnitPlayerControlled(unit) and UnitThreatSituation('player', unit)) then
+		t =  self.colors.threat[UnitThreatSituation('player', unit)]
 	elseif(element.colorClass and UnitIsPlayer(unit)) or
 		(element.colorClassNPC and not UnitIsPlayer(unit)) or
 		(element.colorClassPet and UnitPlayerControlled(unit) and not UnitIsPlayer(unit)) then
@@ -246,6 +250,24 @@ local function SetColorTapping(element, state)
 	end
 end
 
+--[[ Health:SetColorThreat(state)
+Used to toggle coloring by the unit's threat status.
+
+* self  - the Health element
+* state - the desired state (boolean)
+--]]
+local function SetColorThreat(element, state)
+	if(element.colorThreat ~= state) then
+		element.colorThreat = state
+		if(element.colorThreat) then
+			element.__owner:RegisterEvent('UNIT_THREAT_LIST_UPDATE', ColorPath)
+		else
+			element.__owner:UnregisterEvent('UNIT_THREAT_LIST_UPDATE', ColorPath)
+		end
+	end
+end
+
+
 --[[ Health:SetFrequentUpdates(state)
 Used to toggle frequent updates.
 
@@ -273,6 +295,7 @@ local function Enable(self, unit)
 		element.SetColorDisconnected = SetColorDisconnected
 		element.SetColorSelection = SetColorSelection
 		element.SetColorTapping = SetColorTapping
+		element.SetColorThreat = SetColorThreat
 		element.SetFrequentUpdates = SetFrequentUpdates
 
 		if(element.colorDisconnected) then
@@ -285,6 +308,10 @@ local function Enable(self, unit)
 
 		if(element.colorTapping) then
 			self:RegisterEvent('UNIT_FACTION', ColorPath)
+		end
+
+		if(element.colorThreat) then
+			self:RegisterEvent('UNIT_THREAT_LIST_UPDATE', ColorPath)
 		end
 
 		if(element.frequentUpdates) then
@@ -316,6 +343,7 @@ local function Disable(self)
 		self:UnregisterEvent('UNIT_CONNECTION', ColorPath)
 		self:UnregisterEvent('UNIT_FACTION', ColorPath)
 		self:UnregisterEvent('UNIT_FLAGS', ColorPath)
+		self:UnregisterEvent('UNIT_THREAT_LIST_UPDATE', ColorPath)
 	end
 end
 
