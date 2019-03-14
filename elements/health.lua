@@ -80,7 +80,7 @@ The following options are listed by priority. The first check that returns true 
     Background.multiplier = .5
 
     -- Register it with oUF
-	Health.bg = Background
+    Health.bg = Background
     self.Health = Health
 --]]
 
@@ -122,7 +122,7 @@ local function UpdateColor(self, event, unit)
 		r, g, b = t[1], t[2], t[3]
 	end
 
-	if(r or g or b) then
+	if(b) then
 		element:SetStatusBarColor(r, g, b)
 
 		local bg = element.bg
