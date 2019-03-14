@@ -25,7 +25,7 @@ A default texture will be applied if the widget is a StatusBar and doesn't have 
 
 The following options are listed by priority. The first check that returns true decides the color of the bar.
 
-.colorDead         - Use `self.colors.disconnected` to color the bar if the unit is dead (boolean)
+.colorDead         - Use `self.colors.dead` to color the bar if the unit is dead (boolean)
 .colorDisconnected - Use `self.colors.disconnected` to color the bar if the unit is offline (boolean)
 .colorTapping      - Use `self.colors.tapping` to color the bar if the unit isn't tapped by the player (boolean)
 .colorThreat       - Use `self.colors.threat[threat]` to color the bar based on the unit's threat status. `threat` is
