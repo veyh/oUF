@@ -184,7 +184,7 @@ local function Update(self, event, unit)
 	* max  - the unit's maximum possible health value (number)
 	--]]
 	if(element.PostUpdate) then
-		return element:PostUpdate(unit, cur, max)
+		element:PostUpdate(unit, cur, max)
 	end
 end
 
