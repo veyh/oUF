@@ -242,7 +242,7 @@ local function Update(self, event, unit)
 	* max  - the unit's maximum possible power value (number)
 	--]]
 	if(element.PostUpdate) then
-		return element:PostUpdate(unit, cur, min, max)
+		element:PostUpdate(unit, cur, min, max)
 	end
 end
 
@@ -261,7 +261,7 @@ local function Path(self, ...)
 end
 
 local function ForceUpdate(element)
-	return Path(element.__owner, 'ForceUpdate', element.__owner.unit)
+	Path(element.__owner, 'ForceUpdate', element.__owner.unit)
 end
 
 --[[ Power:SetColorDisconnected(state)
