@@ -21,8 +21,6 @@ A default texture will be applied if the widget is a StatusBar and doesn't have 
                                     bar. Only valid for the player and pet units (boolean)
 .displayAltPower                  - Use this to let the widget display alternate power if the unit has one. If no
                                     alternate power the display will fall back to primary power (boolean)
-.altPowerColor                    - The RGB values to use for a fixed color if the alt power bar is being displayed
-                                    instead of primary power bar (table)
 .useAtlas                         - Use this to let the widget use an atlas for its texture if `.atlas` is defined on
                                     the widget or an atlas is present in `self.colors.power` for the appropriate power
                                     type (boolean)
@@ -138,8 +136,8 @@ local function UpdateColor(self, event, unit)
 		elseif(element.useAtlas and (element.atlas or t.atlas)) then
 			atlas = element.atlas or t.atlas
 		end
-	elseif(element.colorPower and (element.altPowerColor or self.colors.power[ALTERNATE_POWER_INDEX])) then
-		t = self.colors.power[ALTERNATE_POWER_INDEX] or element.altPowerColor
+	elseif(element.colorPower and element.displayType == ALTERNATE_POWER_INDEX) then
+		t = self.colors.power[ALTERNATE_POWER_INDEX]
 	elseif(element.colorClass and UnitIsPlayer(unit)) or
 		(element.colorClassNPC and not UnitIsPlayer(unit)) or
 		(element.colorClassPet and UnitPlayerControlled(unit) and not UnitIsPlayer(unit)) then
