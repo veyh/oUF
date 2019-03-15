@@ -273,7 +273,6 @@ local function SetColorThreat(element, state)
 	end
 end
 
-
 --[[ Health:SetFrequentUpdates(state)
 Used to toggle frequent updates.
 
