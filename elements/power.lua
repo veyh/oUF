@@ -34,6 +34,8 @@ The following options are listed by priority. The first check that returns true 
 .colorDead         - Use `self.colors.dead` to color the bar if the unit is dead (boolean)
 .colorDisconnected - Use `self.colors.disconnected` to color the bar if the unit is offline (boolean)
 .colorTapping      - Use `self.colors.tapping` to color the bar if the unit isn't tapped by the player (boolean)
+.colorThreat       - Use `self.colors.threat[threat]` to color the bar based on the unit's threat status. `threat` is
+                     defined by the first return of [UnitThreatSituation](https://wow.gamepedia.com/API_UnitThreatSituation) (boolean)
 .colorPower        - Use `self.colors.power[token]` to color the bar based on the unit's power type. This method will
                      fall-back to `:GetAlternativeColor()` if it can't find a color matching the token. If this function
                      isn't defined, then it will attempt to color based upon the alternative power colors returned by
@@ -121,6 +123,8 @@ local function UpdateColor(self, event, unit)
 		t = self.colors.disconnected
 	elseif(element.colorTapping and not UnitPlayerControlled(unit) and UnitIsTapDenied(unit)) then
 		t = self.colors.tapped
+	elseif(element.colorThreat and not UnitPlayerControlled(unit) and UnitThreatSituation('player', unit)) then
+		t =  self.colors.threat[UnitThreatSituation('player', unit)]
 	elseif(element.colorPower and element.displayType ~= ALTERNATE_POWER_INDEX) then
 		t = self.colors.power[ptoken or ptype]
 		if(not t) then
@@ -306,6 +310,23 @@ local function SetColorTapping(element, state)
 	end
 end
 
+--[[ Power:SetColorThreat(state)
+Used to toggle coloring by the unit's threat status.
+
+* self  - the Power element
+* state - the desired state (boolean)
+--]]
+local function SetColorThreat(element, state)
+	if(element.colorThreat ~= state) then
+		element.colorThreat = state
+		if(element.colorThreat) then
+			element.__owner:RegisterEvent('UNIT_THREAT_LIST_UPDATE', ColorPath)
+		else
+			element.__owner:UnregisterEvent('UNIT_THREAT_LIST_UPDATE', ColorPath)
+		end
+	end
+end
+
 --[[ Power:SetFrequentUpdates(state)
 Used to toggle frequent updates.
 
@@ -333,6 +354,7 @@ local function Enable(self)
 		element.SetColorDisconnected = SetColorDisconnected
 		element.SetColorSelection = SetColorSelection
 		element.SetColorTapping = SetColorTapping
+		element.SetColorThreat = SetColorThreat
 		element.SetFrequentUpdates = SetFrequentUpdates
 
 		if(element.colorDisconnected) then
@@ -345,6 +367,10 @@ local function Enable(self)
 
 		if(element.colorTapping) then
 			self:RegisterEvent('UNIT_FACTION', ColorPath)
+		end
+
+		if(element.colorThreat) then
+			self:RegisterEvent('UNIT_THREAT_LIST_UPDATE', ColorPath)
 		end
 
 		if(element.frequentUpdates) then
@@ -383,6 +409,7 @@ local function Disable(self)
 		self:UnregisterEvent('UNIT_CONNECTION', ColorPath)
 		self:UnregisterEvent('UNIT_FACTION', ColorPath)
 		self:UnregisterEvent('UNIT_FLAGS', ColorPath)
+		self:UnregisterEvent('UNIT_THREAT_LIST_UPDATE', ColorPath)
 	end
 end
 
