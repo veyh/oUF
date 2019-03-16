@@ -21,11 +21,8 @@ A default texture will be applied if the widget is a StatusBar and doesn't have 
                                     bar. Only valid for the player and pet units (boolean)
 .displayAltPower                  - Use this to let the widget display alternate power if the unit has one. If no
                                     alternate power the display will fall back to primary power (boolean)
-.useAtlas                         - Use this to let the widget use an atlas for its texture if `.atlas` is defined on
-                                    the widget or an atlas is present in `self.colors.power` for the appropriate power
-                                    type (boolean)
-.atlas                            - A custom atlas that will be used in place of any atlas defined in
-                                    `self.colors.power` (string)
+.useAtlas                         - Use this to let the widget use an atlas for its texture if an atlas is present in
+                                    `self.colors.power` for the appropriate power type (boolean)
 .smoothGradient                   - 9 color values to be used with the .colorSmooth option (table)
 .considerSelectionInCombatHostile - Indicates whether selection should be considered hostile while the unit is in
                                     combat with the player (boolean)
@@ -145,7 +142,7 @@ local function UpdateColor(self, event, unit)
 		end
 
 		if(element.useAtlas and t and t.atlas) then
-			atlas = element.atlas or t.atlas
+			atlas = t.atlas
 		end
 	elseif(element.colorClass and UnitIsPlayer(unit)) or
 		(element.colorClassNPC and not UnitIsPlayer(unit)) or
