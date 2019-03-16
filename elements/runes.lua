@@ -102,6 +102,10 @@ local function UpdateColor(self, event)
 			bg:SetVertexColor(r * mu, g * mu, b * mu)
 		end
 	end
+
+	if(element.PostUpdateColor) then
+		element:PostUpdateColor(r, g, b)
+	end
 end
 
 local function ColorPath(self, ...)
