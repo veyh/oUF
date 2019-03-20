@@ -18,7 +18,7 @@ A default texture will be applied if the widget is a StatusBar and doesn't have 
 ## Options
 
 .frequentUpdates                  - Indicates whether to use UNIT_POWER_FREQUENT instead UNIT_POWER_UPDATE to update the
-                                    bar. Only valid for the player and pet units (boolean)
+                                    bar (boolean)
 .displayAltPower                  - Use this to let the widget display alternate power if the unit has one. If no
                                     alternate power the display will fall back to primary power (boolean)
 .useAtlas                         - Use this to let the widget use an atlas for its texture if an atlas is present in
