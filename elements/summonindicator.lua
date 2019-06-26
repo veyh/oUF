@@ -25,11 +25,13 @@ This element updates by changing the texture.
 local _, ns = ...
 local oUF = ns.oUF
 
+local SummonStatus = Enum and Enum.SummonStatus or {}
+
 -- sourced from Blizzard_APIDocumentation/IncomingSummonDocumentation.lua
-local SUMMON_STATUS_NONE = Enum.SummonStatus.None or 0
-local SUMMON_STATUS_PENDING = Enum.SummonStatus.Pending or 1
-local SUMMON_STATUS_ACCEPTED = Enum.SummonStatus.Accepted or 2
-local SUMMON_STATUS_DECLINED = Enum.SummonStatus.Declined or 3
+local SUMMON_STATUS_NONE = SummonStatus.None or 0
+local SUMMON_STATUS_PENDING = SummonStatus.Pending or 1
+local SUMMON_STATUS_ACCEPTED = SummonStatus.Accepted or 2
+local SUMMON_STATUS_DECLINED = SummonStatus.Declined or 3
 
 local function Update(self, event, unit)
 	if(self.unit ~= unit) then return end

@@ -178,7 +178,7 @@ local tagStrings = {
 
 	['difficulty'] = [[function(u)
 		if UnitCanAttack('player', u) then
-			local l = UnitEffectiveLevel(u)
+			local l = UnitEffectiveLevel and UnitEffectiveLevel(u) or UnitLevel(u)
 			return Hex(GetCreatureDifficultyColor((l > 0) and l or 999))
 		end
 	end]],
@@ -220,7 +220,8 @@ local tagStrings = {
 
 	['level'] = [[function(u)
 		local l = UnitLevel(u)
-		if(UnitIsWildBattlePet(u) or UnitIsBattlePetCompanion(u)) then
+		if((UnitIsWildBattlePet and UnitIsWildBattlePet(u))
+		or (UnitIsWildBattlePet and UnitIsBattlePetCompanion(u))) then
 			l = UnitBattlePetLevel(u)
 		end
 

@@ -29,19 +29,22 @@ This element updates by changing the texture.
 local _, ns = ...
 local oUF = ns.oUF
 
+local Enum = Enum or {}
+local PvpUnitClassification = Enum.PvpUnitClassification or {}
+
 -- sourced from FrameXML/CompactUnitFrame.lua
 local ICONS = {
-	[Enum.PvpUnitClassification.FlagCarrierHorde or 0] = "nameplates-icon-flag-horde",
-	[Enum.PvpUnitClassification.FlagCarrierAlliance or 1] = "nameplates-icon-flag-alliance",
-	[Enum.PvpUnitClassification.FlagCarrierNeutral or 2] = "nameplates-icon-flag-neutral",
-	[Enum.PvpUnitClassification.CartRunnerHorde or 3] = "nameplates-icon-cart-horde",
-	[Enum.PvpUnitClassification.CartRunnerAlliance or 4] = "nameplates-icon-cart-alliance",
-	[Enum.PvpUnitClassification.AssassinHorde or 5] = "nameplates-icon-bounty-horde",
-	[Enum.PvpUnitClassification.AssassinAlliance or 6] = "nameplates-icon-bounty-alliance",
-	[Enum.PvpUnitClassification.OrbCarrierBlue or 7] = "nameplates-icon-orb-blue",
-	[Enum.PvpUnitClassification.OrbCarrierGreen or 8] = "nameplates-icon-orb-green",
-	[Enum.PvpUnitClassification.OrbCarrierOrange or 9] = "nameplates-icon-orb-orange",
-	[Enum.PvpUnitClassification.OrbCarrierPurple or 10] = "nameplates-icon-orb-purple",
+	[PvpUnitClassification.FlagCarrierHorde or 0] = "nameplates-icon-flag-horde",
+	[PvpUnitClassification.FlagCarrierAlliance or 1] = "nameplates-icon-flag-alliance",
+	[PvpUnitClassification.FlagCarrierNeutral or 2] = "nameplates-icon-flag-neutral",
+	[PvpUnitClassification.CartRunnerHorde or 3] = "nameplates-icon-cart-horde",
+	[PvpUnitClassification.CartRunnerAlliance or 4] = "nameplates-icon-cart-alliance",
+	[PvpUnitClassification.AssassinHorde or 5] = "nameplates-icon-bounty-horde",
+	[PvpUnitClassification.AssassinAlliance or 6] = "nameplates-icon-bounty-alliance",
+	[PvpUnitClassification.OrbCarrierBlue or 7] = "nameplates-icon-orb-blue",
+	[PvpUnitClassification.OrbCarrierGreen or 8] = "nameplates-icon-orb-green",
+	[PvpUnitClassification.OrbCarrierOrange or 9] = "nameplates-icon-orb-orange",
+	[PvpUnitClassification.OrbCarrierPurple or 10] = "nameplates-icon-orb-purple",
 }
 
 local function Update(self, event, unit)
