@@ -48,6 +48,7 @@ local _, ns = ...
 local oUF = ns.oUF
 
 local _, PlayerClass = UnitClass('player')
+local UnitHasVehicleUI = _G.UnitHasVehicleUI or function () return false end
 
 -- sourced from FrameXML/Constants.lua
 local SPEC_MAGE_ARCANE = SPEC_MAGE_ARCANE or 1
