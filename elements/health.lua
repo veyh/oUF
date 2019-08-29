@@ -87,6 +87,21 @@ local Private = oUF.Private
 
 local unitSelectionType = Private.unitSelectionType
 
+local UnitHealth = _G.UnitHealth
+local UnitHealthMax = _G.UnitHealthMax
+
+if ns.IsVanillaClient() and _G.IsAddOnLoaded("RealMobHealth") then
+  local getCurrentAndMax = _G.RealMobHealth.GetUnitHealth
+
+  UnitHealth = function (unit)
+    return (getCurrentAndMax(unit))
+  end
+
+  UnitHealthMax = function (unit)
+    return (select(2, getCurrentAndMax(unit)))
+  end
+end
+
 local function UpdateColor(element, unit, cur, max)
 	local parent = element.__owner
 
